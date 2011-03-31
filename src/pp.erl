@@ -32,7 +32,7 @@
                  short/0, sshort/0, int/0, sint/0, 
                  long/0, slong/0, list/2, choice/2, 
                  optional/1, wrap/2, tuple/1, record/2, 
-                 binary/1, string/0, wstring/0
+                 binary/1, string/0, wstring/0, price/0
                 ]).
 
 -define(PP_VER, 1).
@@ -180,8 +180,8 @@ limit_type() ->
 limit() ->
     record(limit, {
              limit_type(),
-             int(),
-             int()
+             price(),
+             price()
             }).
 
 query_op() ->

@@ -21,8 +21,8 @@
 -module(pickle).
 
 -export([pickle/2, unpickle/2]).
--export([byte/0, short/0, sshort/0, 
-         int/0, sint/0, long/0, slong/0]).
+-export([byte/0, short/0, sshort/0, int/0, 
+         sint/0, long/0, slong/0, price/0]).
 -export([list/2, choice/2, optional/1, wrap/2,
          tuple/1, record/2, binary/1, wstring/0]).
 -export([string/0]).
@@ -120,6 +120,20 @@ write_slong(Acc, Word) ->
 read_slong(Bin) -> 
     <<Word:64/signed, Rest/binary>> = Bin,
     {Word, Rest}.
+
+%%% Price with 5 decimal points
+
+price() -> 
+    {fun write_price/2, fun read_price/1}.
+
+write_price(Acc, Word) -> 
+    Price = trunc(Word * 10000),
+    [<<Price:32>>|Acc].
+
+read_price(Bin) -> 
+    <<Word:32, Rest/binary>> = Bin,
+    Price = Word / 10000,
+    {Price, Rest}.
 
 %%% List. We supply a pickler for list length 
 %%% as well as a pickler for list elements.
