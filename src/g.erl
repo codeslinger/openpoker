@@ -57,6 +57,9 @@ make(R = #start_game{}) ->
            end,
     make(R, #texas{}, Mods).
 
+make(R = #start_game{}, none, none) ->
+    make(R);
+
 make(R = #start_game{}, Ctx, Mods) ->
     Game = exch:new(game, Ctx, Mods),
     Game:start(self(), [R]).

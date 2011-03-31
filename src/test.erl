@@ -555,8 +555,7 @@ disconnected_client_test() ->
 network_login_logout_test() ->
     flush(),
     Host = localhost, 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     %% create dummy players
     Nick = nick(),
@@ -592,8 +591,7 @@ network_login_logout_test() ->
 find_empty_game_test() ->
     flush(),
     Host = localhost, 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     %% find an empty game
     {ok, Game} = start_basic_game(),
@@ -609,8 +607,7 @@ find_empty_game_test() ->
 simple_game_simulation_test() ->
     flush(),
     Host = "localhost",
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     %% find an empty game
     {ok, Game} = start_basic_game(),
@@ -647,8 +644,7 @@ simple_game_simulation_test() ->
 leave_after_sb_posted_test() ->
     flush(),
     Host = "localhost", 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(1000),
     {ok, Game} = start_basic_game(),
     GID = gen_server:call(Game, 'ID'),
@@ -671,8 +667,7 @@ leave_after_sb_posted_test() ->
 dynamic_game_start_test() ->
     flush(),
     Host = localhost, 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(3000),
     %% create dummy players
     Nick = nick(),
@@ -715,8 +710,7 @@ dynamic_game_start_test() ->
 query_own_balance_test() ->
     flush(),
     Host = localhost, 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     Nick = nick(),
     {ok, ID} = player:create(Nick, Nick, <<"">>, 1000.0),
@@ -782,8 +776,7 @@ query_own_balance_test() ->
 two_games_in_a_row_test() ->
     flush(),
     Host = "localhost", 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     {ok, Game} = start_basic_game(),
     GID = gen_server:call(Game, 'ID'),
@@ -812,8 +805,7 @@ two_games_in_a_row_test() ->
 two_games_with_leave_test() ->
     flush(),
     Host = "localhost", 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     %% find an empty game
     {ok, Game} = start_basic_game(3),
@@ -850,8 +842,7 @@ make_winners([{Seat, Amount}|T], Tree) ->
 leave_out_of_turn_test() ->
     flush(),
     Host = "localhost", 
-    Port = port(),
-    {ok, Server} = server:start(Host, Port, true),
+    {ok, Server, Port} = test_server_start(Host),
     timer:sleep(100),
     %% find an empty game
     {ok, Game} = start_basic_game(3),
@@ -993,7 +984,7 @@ make_test_game(SeatCount, Players, Context, Modules) ->
       start_delay = 1000,
       player_timeout = 1000
      },
-    {ok, Game} = g:make(Cmd, Context, Modules),
+    {ok, Game} = test_make_game(Cmd, Context, Modules),
     join_game(Game, Players),
     Game.
 
@@ -1122,10 +1113,7 @@ nick() ->
 
 nick(Prefix) ->
     list_to_binary(pid_to_list(self()) ++ Prefix ++
-                   integer_to_list(random:uniform(1000000))).
-
-port() ->
-    2000 + random:uniform(20000).
+                   integer_to_list(random:uniform(10000000))).
 
 stop_game(Game) ->
     stop_proc(Game, fun game_stop/1).
@@ -1183,17 +1171,17 @@ start_basic_game() ->
     start_basic_game(2).
 
 start_basic_game(N) ->
-    g:make(_ = #start_game{ 
-             type = ?GT_IRC_TEXAS,
-             limit = #limit{ 
-               type = ?LT_FIXED_LIMIT, 
-               low = 10.0, 
-               high = 20.0
-              },
-             start_delay = 1000,
-             player_timeout = 1000,
-             seat_count = N
-            }).
+    test_make_game(_ = #start_game{ 
+                     type = ?GT_IRC_TEXAS,
+                     limit = #limit{ 
+                       type = ?LT_FIXED_LIMIT, 
+                       low = 10.0, 
+                       high = 20.0
+                      },
+                     start_delay = 1000,
+                     player_timeout = 1000,
+                     seat_count = N
+                    }).
 
 %%% 
 
@@ -1208,3 +1196,41 @@ start_basic_game(N) ->
 
 game_stop(Game) ->
     gen_server:cast(Game, stop).
+
+port() ->
+    2000 + random:uniform(50000).
+
+test_server_start(Host) ->
+    test_server_start(Host, port(), 0).
+
+test_server_start(_, _, N)
+  when N > 20000 ->
+    {error, out_of_server_ports};
+
+test_server_start(Host, Port, N) ->
+    case server:start(Host, Port, true) of
+        {ok, Server} ->
+            {ok, Server, Port};
+        _ ->
+            test_server_start(Host, port(), N + 1)
+    end.
+
+test_make_game(Cmd) ->
+    test_make_game(Cmd, none, none).
+
+test_make_game(Cmd, Context, Modules) ->
+    test_make_game(Cmd, Context, Modules, 0).
+
+test_make_game(_, _, _, N) 
+  when N > 1000 ->
+    {error, cannot_start_test_game};
+
+test_make_game(Cmd, Context, Modules, N) ->
+    case g:make(Cmd, Context, Modules) of
+        X = {ok, _} ->
+            X;
+        _ ->
+            test_make_game(Cmd, Context, Modules, N + 1)
+    end.
+
+            
