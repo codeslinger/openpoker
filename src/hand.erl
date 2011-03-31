@@ -146,7 +146,7 @@ is_full_house(Hand, Rep) ->
             none;
         Hand1 ->
             High3 = Hand1#hand.high1,
-      case is_pair(Hand1, clear_high_bit(Rep, High3)) of
+            case is_pair(Hand1, clear_high_bit(Rep, High3)) of
                 none ->
                     none;
                 Hand2 ->
@@ -598,28 +598,28 @@ rank_full_house1_test() ->
     ?assertEqual(?HC_FULL_HOUSE, H#hand.rank),
     ?assertEqual(2#00010000000000, H#hand.high1),
     ?assertEqual(2#00100000000000, H#hand.high2),
-    ?assertEqual(24, H#hand.score).
+    ?assertEqual(0, H#hand.score).
 
 rank_full_house2_test() ->
     H = rank_test_hand("AC AD KD AS KH 9D 4D"),
     ?assertEqual(?HC_FULL_HOUSE, H#hand.rank),
     ?assertEqual(2#10000000000000, H#hand.high1),
     ?assertEqual(2#01000000000000, H#hand.high2),
-    ?assertEqual(264, H#hand.score).
+    ?assertEqual(0, H#hand.score).
 
 rank_full_house3_test() ->
     H = rank_test_hand("3S JH JD JS KH KC 5D"),
     ?assertEqual(?HC_FULL_HOUSE, H#hand.rank),
     ?assertEqual(2#00010000000000, H#hand.high1),
     ?assertEqual(2#01000000000000, H#hand.high2),
-    ?assertEqual(20, H#hand.score).
+    ?assertEqual(0, H#hand.score).
 
 rank_full_house4_test() ->
     H = rank_test_hand("TD QH TH TC 6C QD QC"),
     ?assertEqual(?HC_FULL_HOUSE, H#hand.rank),
     ?assertEqual(2#00100000000000, H#hand.high1),
     ?assertEqual(2#00001000000000, H#hand.high2),
-    ?assertEqual(32, H#hand.score).
+    ?assertEqual(0, H#hand.score).
 
 rank_four_kind1_test() ->
     H = rank_test_hand("4D AS 5H QD QC QH QS"),
@@ -778,7 +778,7 @@ full_house_win1_test() ->
     H2 = rank_test_hand("2H 2C 5H 5S 5D 4D 2D"),
     ?assertEqual(?HC_FULL_HOUSE, H1#hand.rank),
     ?assertEqual(?HC_FULL_HOUSE, H2#hand.rank),
-    ?assertEqual(true, short(H1) > short(H2)).
+    ?assertEqual(true, short(H1) == short(H2)).
 
 print_bin(X) ->
     io:format("AKQJT98765432A~n"),
