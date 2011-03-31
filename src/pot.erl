@@ -97,7 +97,7 @@ make_member(Pot, Player) ->
 %% Add up to all-in amount if pot is split
 %% and simply assign the amount if not
 
-add_bet(Pot, Player, Amount) when record(Pot, side_pot) ->
+add_bet(Pot, Player, Amount) when is_record(Pot, side_pot) ->
     {NewPot, Bet} = make_member(Pot, Player),
     AllIn = NewPot#side_pot.all_in,
     {Unallocated, Members} = 
@@ -127,10 +127,10 @@ add_bet(Pot, Player, Amount) when record(Pot, side_pot) ->
                }, 
     {NewPot1, Unallocated};
 
-add_bet(Pot, Player, Amount) when record(Pot, pot) ->
+add_bet(Pot, Player, Amount) when is_record(Pot, pot) ->
     add_bet(Pot, Player, Amount, false).
 
-add_bet(Pot, Player, Amount, IsAllIn) when record(Pot, pot) ->
+add_bet(Pot, Player, Amount, IsAllIn) when is_record(Pot, pot) ->
     %% add to prior pots as needed
     {Active, Unallocated} = allocate_bet(Pot#pot.active, Player, Amount),
     Pot1 = Pot#pot {
@@ -149,7 +149,7 @@ add_bet(Pot, Player, Amount, IsAllIn) when record(Pot, pot) ->
     end,
     {Pot2, Rest}.
 
-allocate_bet(SidePots, Player, Amount) when list(SidePots) ->
+allocate_bet(SidePots, Player, Amount) when is_list(SidePots) ->
     lists:mapfoldl(fun(Pot, Unallocated) ->
                            add_bet(Pot, Player, Unallocated)
                    end, 
@@ -163,11 +163,11 @@ side_pots(Pot) ->
                              andalso total(P) > 0
                  end, [Current|Temp]).
 
-total(Pot) when record(Pot, side_pot) ->
+total(Pot) when is_record(Pot, side_pot) ->
     F = fun(X, Acc) -> X + Acc end,
     lists:foldl(F, 0, gb_trees:values(Pot#side_pot.members));
 
-total(Pot) when record(Pot, pot) ->
+total(Pot) when is_record(Pot, pot) ->
     F = fun(X, Acc) -> 
                 Acc + total(X)
         end,
@@ -178,7 +178,7 @@ total(Pot) when record(Pot, pot) ->
 %% Bets in excess of the all-in amount are moved 
 %% to a new side pot.
 
-split(Pot, Player, Amount) when record(Pot, pot) ->
+split(Pot, Player, Amount) when is_record(Pot, pot) ->
     {OldPot, NewPot} = split(Pot#pot.current, Player, Amount),
     Active = lists:append(Pot#pot.active, [OldPot]),
     Pot#pot { 
@@ -230,7 +230,7 @@ update_counter(Key, Amount, Tree) ->
 %%%
 
 is_member(Pot, Player) 
-  when record(Pot, side_pot) ->
+  when is_record(Pot, side_pot) ->
     gb_trees:is_defined(Player, Pot#side_pot.members).
 
 %% Pot is split, Delta > 0

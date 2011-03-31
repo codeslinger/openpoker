@@ -233,7 +233,7 @@ make_rep(Hand = #hand{}) ->
     make_rep(Hand#hand.cards);
 
 make_rep(Cards) 
-  when list(Cards) ->
+  when is_list(Cards) ->
     make_rep(Cards, {0, 0, 0, 0}).
 
 make_rep([H|T], Rep) 

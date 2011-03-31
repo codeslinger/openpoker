@@ -12,7 +12,7 @@ erl -make
 4. Figure out your fully qualified host name. You can get this 
 by running hostname on Unix.
 
-5. Run the following sequence from the installation directory:
+5. Run the following sequence from the src directory:
 
 erl -sname master1
 schema:install([node()]).

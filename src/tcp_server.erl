@@ -81,7 +81,7 @@ start_raw_server(Port, Fun, Max, Length) ->
             {error, already_started}
     end.
 
-stop(Port) when integer(Port) ->
+stop(Port) when is_integer(Port) ->
     Name = port_name(Port),
     case whereis(Name) of
         undefined ->
@@ -92,13 +92,13 @@ stop(Port) when integer(Port) ->
             stopped
     end.
 
-children(Port) when integer(Port) ->
+children(Port) when is_integer(Port) ->
     port_name(Port) ! {children, self()},
     receive
         {session_server, Reply} -> Reply
     end.
 
-port_name(Port) when integer(Port) ->
+port_name(Port) when is_integer(Port) ->
     list_to_atom("portServer" ++ integer_to_list(Port)).
 
 cold_start(Master, Port, Fun, Max, Length) ->
@@ -144,7 +144,7 @@ socket_loop(Listen, New, Active, Fun, Max) ->
             io:format("Here in loop:~p~n",[Other])
     end.
 
-possibly_start_another(New, Listen, Active, Fun, Max) when pid(New) ->
+possibly_start_another(New, Listen, Active, Fun, Max) when is_pid(New) ->
     socket_loop(Listen, New, Active, Fun, Max);
 possibly_start_another(false, Listen, Active, Fun, Max) ->
     case length(Active) of
