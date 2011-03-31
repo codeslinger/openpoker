@@ -247,7 +247,7 @@ process_event(Client, _Socket, Event) ->
 parse_packet(Socket, Client) ->
     receive
         {tcp, Socket, Bin} ->
-            io:format("RCV ~p~n", [Bin]),
+            %%io:format("RCV ~p~n", [Bin]),
             gen_server:cast(Client#client.server, {'BUMP', size(Bin)}),
             Client1 = case catch pp:read(Bin) of
                           {'EXIT', Error} ->
