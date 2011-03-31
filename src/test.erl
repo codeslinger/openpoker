@@ -596,7 +596,7 @@ find_empty_game_test() ->
     %% find an empty game
     {ok, Game} = start_basic_game(),
     gen_server:cast(Game, {'NOTE', find_empty_game}),
-    find_game(Host, Port),
+    find_game(Host, Port, ?GT_IRC_TEXAS),
     %% clean up
     ?assertEqual(ok, stop_game(Game)),
     server:stop(Server),
