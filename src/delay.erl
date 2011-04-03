@@ -20,6 +20,10 @@
 
 -module(delay).
 
+%%% 
+%%% Pre-game delay
+%%%
+
 -export([start/3, delay/3]).
 
 -include_lib("eunit/include/eunit.hrl").

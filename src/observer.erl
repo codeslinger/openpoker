@@ -20,6 +20,10 @@
 
 -module(observer).
 
+%%% 
+%%% Observer bot. Reports game activity.
+%%%
+
 -export([start/1, stop/1, observe/2]).
 
 -include("common.hrl").

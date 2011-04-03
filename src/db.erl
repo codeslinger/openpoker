@@ -20,6 +20,10 @@
 
 -module(db).
 
+%%%
+%%% Database utilities to simplify working with Mnesia
+%%%
+
 -export([start/0, wait_for_tables/2, clear_table/1,
          write/1, delete/2, read/2, index_read/3, 
          update_balance/3]).

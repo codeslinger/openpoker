@@ -20,6 +20,10 @@
 
 -module(pickle).
 
+%%%
+%%% Serialization tools
+%%%
+
 -export([pickle/2, unpickle/2]).
 -export([byte/0, short/0, sshort/0, int/0, 
          sint/0, long/0, slong/0, price/0]).

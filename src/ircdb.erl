@@ -21,6 +21,10 @@
 -module(ircdb).
 -export([convert/1]).
 
+%%% 
+%%% Tools to convert IRC Poker db files to something OpenPoker can use
+%%%
+
 -include("ircdb.hrl").
 
 convert(Dir) ->

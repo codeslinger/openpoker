@@ -20,6 +20,10 @@
 
 -module(gateway).
 
+%%% 
+%%% Load-balancing gateway. Directs clients to lightly loaded servers.
+%%%
+
 -export([start/3, start/1]).
 
 -include("common.hrl").

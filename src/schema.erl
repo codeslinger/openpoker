@@ -20,6 +20,10 @@
 
 -module(schema).
 
+%%%
+%%% Database schema
+%%%
+
 -export([install/1, install/0, populate/0]).
 
 -include("schema.hrl").

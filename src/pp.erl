@@ -20,6 +20,10 @@
 
 -module(pp).
 
+%%%
+%%% OpenPoker protocol
+%%%
+
 -export([read/1, write/1, test/0, send/3]).
 -export([id_to_player/1, id_to_game/1, id_to_tourney/1]).
 

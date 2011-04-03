@@ -20,6 +20,10 @@
 
 -module(delayed_exit).
 
+%%% 
+%%% Slight delay before exiting
+%%%
+
 -export([start/3, delayed_exit/3]).
 
 -include("common.hrl").

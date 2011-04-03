@@ -18,10 +18,12 @@
 %%%% http://creativecommons.org/licenses/by-nc-sa/3.0/us/
 %%%%
 
-%%% Main tournament module. Analogous to game.
-
 -module(tourney).
 -behaviour(exch).
+
+%%%
+%%% Main tournament module. Analogous to game.
+%%%
 
 -export([id/0, start/1, stop/1, dispatch/2, call/2]).
 

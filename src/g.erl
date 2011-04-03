@@ -20,6 +20,10 @@
 
 -module(g).
 
+%%%
+%%% Game utility functions
+%%%
+
 -export([get_seats/2, get_seats/3, is_empty/1,
          reset/1, broadcast/2, broadcast/3,
          notify_start_game/1, notify_cancel_game/1,
@@ -45,7 +49,7 @@
 -include("schema.hrl").
 
 make(R = #start_game{}) ->
-    %% create game stack. context is used to propagate 
+    %% create a game stack. context is used to propagate 
     %% game information from module to module, e.g. button
     %% and blinds position for texas hold'em.
     Mods = case R#start_game.type of

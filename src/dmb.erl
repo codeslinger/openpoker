@@ -20,6 +20,10 @@
 
 -module(dmb).
 
+%%%
+%%% Distributed multi-bot test harness
+%%%
+
 -export([run/3, run/4, test/1, test/2, test/3, 
          debug/1, setup/0, cleanup/0, procs/0]).
 
@@ -40,6 +44,8 @@
           finished = 0
          }).
 
+%%% Run a single game on the current VM
+
 debug(GameID) ->
     process_flag(trap_exit, true),
     bb:run(),
@@ -59,8 +65,15 @@ debug(GameID) ->
     io:format("dmb: waiting for games to end...~n"),
     wait_for_games(Data1).
 
+%%% Simulate MaxGames concurrent games. Requires a set of 
+%%% bot launchers (bb) and game launchers (mb) running 
+%%% on other nodes of the same cluster. 
+
 test(MaxGames) ->
     test(MaxGames, ?START_DELAY, false).
+
+%%% Same as above but using a delay of Delay milliseconds
+%%% before starting each game. 
 
 test(MaxGames, Delay) 
   when is_number(Delay) ->
@@ -132,6 +145,8 @@ test(DB, Key, N, Max, Data) ->
     Key1 = dets:next(DB, Key),
     test(DB, Key1, N - 1, Max + 1, Data1).
 
+%%% Wait for started games to finish
+
 wait_for_games(Data)
   when is_record(Data, dmb) ->
     receive
@@ -160,10 +175,14 @@ wait_for_games(Data)
     io:format("dmb: exited successfully, ~w seconds elapsed~n", 
               [Elapsed]).
 
+%%% Setup the database for running tests
+
 setup() ->
     schema:install(),
     mbu:create_players(),
     timer:sleep(1000).
+
+%%% Delete the results of a previous test run
 
 cleanup() ->
     db:start(),
@@ -180,10 +199,16 @@ cleanup() ->
     end,
     ok.
 
-run(Games, GameServers, BotServers) ->
-    run(Games, GameServers, BotServers, 5000).
+%%% Launch a given number of slave VMs (GameServers, BotServers)
+%%% and then run #Games on them. Works well on a multicore server.
 
-run(Games, GameServers, BotServers, Interval) ->
+run(Games, GameServers, BotServers) ->
+    run(Games, GameServers, BotServers, none).
+
+run(Games, GameServers, BotServers, Interval) 
+  when is_integer(Games),
+       is_integer(GameServers),
+       is_integer(BotServers) ->
     db:start(),
     pg2:start(),
     start_bot_slaves(BotServers),
@@ -195,7 +220,12 @@ run(Games, GameServers, BotServers, Interval) ->
     io:format("bot launchers  : ~p~n", [pg2:get_members(?LAUNCHERS)]),
     io:format("game launchers : ~p~n", [pg2:get_members(?MULTIBOTS)]),
     io:format("game servers   : ~p~n", [pg2:get_members(?GAME_SERVERS)]),
-    stats:start(Interval),
+    if 
+        Interval =/= none ->
+            stats:start(Interval);
+       true ->
+            skip
+    end,
     dmb:test(Games).
 
 start_bot_slaves(0) ->
@@ -220,6 +250,8 @@ start_game_slaves(N) ->
     rpc:call(Node, mb, run, []),
     start_game_slaves(N - 1).
 
+%%% Enable kernel poll and disable SMP. The latter is not obligatory.
+
 common_args() ->
     "+K true -smp disable".
 
@@ -238,6 +270,8 @@ start_slave_node(Name, Args) ->
             timer:sleep(1000),
             start_slave_node(Name, Args)
     end.
+
+%%% Wait for a process group to become available
 
 wait_for_group(Name) ->
     case pg2:get_members(Name) of

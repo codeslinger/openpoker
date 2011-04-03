@@ -20,6 +20,10 @@
 
 -module(hand).
 
+%%%
+%%% Poker hand
+%%%
+
 -export([new/2, new/3, add/2, rank/1]).
 
 -export([make_card/1, make_card/2, print_bin/1, 

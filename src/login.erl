@@ -20,6 +20,10 @@
 
 -module(login).
 
+%%%
+%%% Player login and logout handling
+%%%
+
 -export([login/3, test/0]).
 
 -include("common.hrl").

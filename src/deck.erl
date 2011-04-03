@@ -20,6 +20,10 @@
 
 -module(deck).
 
+%%%
+%%% Card deck
+%%%
+
 -export([new/0, new/1, reset/1, draw/1, test/0]).
 
 -include("test.hrl").

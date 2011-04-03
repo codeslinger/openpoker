@@ -21,6 +21,10 @@
 -module(bb).
 -behaviour(gen_server).
 
+%%% 
+%%% Bot launcher 
+%%%
+
 -compile([export_all]).
 
 -export([init/1, handle_call/3, handle_cast/2, 

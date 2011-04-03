@@ -20,6 +20,10 @@
 
 -module(mbu).
 
+%%%
+%%% Multibot utility functions
+%%%
+
 -export([opendb/0, closedb/1, create_players/0,
          update_players/1, fix_nicks/1, fixup_winners/2,
          ircdb_winners/1, ircdb_nicks/1, match_winners/2, 

@@ -20,6 +20,10 @@
 
 -module(betting).
 
+%%%
+%%% Poker betting logic
+%%%
+
 -export([start/3, betting/3]).
 
 -include_lib("eunit/include/eunit.hrl").
