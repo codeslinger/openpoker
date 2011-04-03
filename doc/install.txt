@@ -49,92 +49,74 @@ erl -sname master1 -s mnesia start
 then
 
 (master@bigdaddy)1> test:all().
-Starting a port server on 10000...
-Starting a port server on 10000...
-Starting a port server on 10000...
-334: CHAT: 0: Game is cancelled, not enough players
-334: CANCEL
-334: JOIN: 3 at seat#1
-334: JOIN: 4 at seat#2
-334: CHAT: 0: Game is starting
-334: START
-334: DEALER: seat#2
-334: SB: seat#1
-334: BB: seat#2
-334: BET: 3, 5.00          
-334: BET: 4, 10.00         
-334: CARD: 3
-334: CARD: 4
-334: CARD: 3
-334: CARD: 4
-334: STAGE: 1
-334: STATE: 3 = 2
-334: WIN: 4, 15.00         
-334: END
-Starting a port server on 10000...
-Starting a port server on 10000...
-ok
 
-then 
+Note that the following is -not- an error!
 
-(master@bigdaddy)2> mb:create_players().
-(master@bigdaddy)3> mb:setup(bigdaddy).
-mb:cleanup: deleting game info...
-mb:cleanup: deleting player info...
-mb:cleanup: deleting game info...
-mb:cleanup: deleting player info...
-Starting a port server on 2000...
-gateway:start(master@bigdaddy, 3000, 1000)
+=ERROR REPORT==== 3-Apr-2011::20:57:40 ===
+    message: "Player timeout!"
+    module: blinds
+    line: 221
+    state: big_blind
+    player: <0.872.0>
+    seat: 2
+    now: {1301,857060,796038}
+test: leave_after_sb_posted_test...*timed out*
+undefined
+=======================================================
+  Failed: 0.  Skipped: 0.  Passed: 25.
+  ^^^ 
+The above should show no failed tests.
+
+8. Running distributed tests
+
+ulimit -n 1024
+
+erl -sname dmb -s mnesia start
+Erlang R14B03 (erts-5.8.4) [source] [smp:4:4] [rq:4] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V5.8.4  (abort with ^G)
+(dmb@biggie)1> dmb:setup().
+
+=INFO REPORT==== 3-Apr-2011::22:25:49 ===
+    application: mnesia
+    exited: stopped
+    type: temporary
+
+=ERROR REPORT==== 3-Apr-2011::22:25:50 ===
+Mnesia(dmb@biggie): ** WARNING ** Mnesia is overloaded: {dump_log,
+                                                         write_threshold}
+
+^^^ ignore these
+
+(dmb@biggie)2> dmb:run(100, 1, 1).
+game1@biggie: game server on port 3001
+game1@biggie: port server on 3001...
+cluster: [bot1@biggie,game1@biggie]
+bot launchers  : [<9617.63.0>]
+game launchers : [<9692.231.0>]
+game servers   : [<9692.68.0>]
+gateway:start(dmb@biggie, 4000, 500000)
 Waiting for game servers...
-Starting a port server on 3000...
+dmb@biggie: port server on 4000...
+Simulating gameplay with 100 games...
+50 games started, 262 players
+100 games started, 504 players
+dmb: 100 games will be launching simultaneously
+dmb: waiting for games to end...
+barrier: reached target of 100
+50 games finished
+100 games finished
+dmb: exited successfully, 32.597982 seconds elapsed
 ok
 
-8. Run the tests
+9. Limitations of the default build of the Erlang VM
 
-In my case:
+You will likely get the following error if you try to run significantly more than 100 games:
 
-(master@bigdaddy)4> mb:test(localhost, 3000, 10).
-gateway: 0.352000ms
-gateway: 0.354000ms
-gateway: 0.551000ms
-gateway: 0.364000ms
-gateway: 0.923000ms
-gateway: 3.25000ms
-gateway: 4.75000ms
-gateway: 12.0250ms
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-gateway: 0.282000ms
-gateway: 0.368000ms
-Connecting to bigdaddy:2000
-Connecting to bigdaddy:2000
-Elapsed: 11.9770s, Average run time: 1.19770 seconds
-MultiBot exited, 11.9800 seconds elapsed
-ok
-(master@bigdaddy)5> halt().
+=ERROR REPORT==== 3-Apr-2011::21:15:04 ===
+driver_select(0x000001ed, 1024, ERL_DRV_READ ERL_DRV_USE, 1) by tcp_inet driver #Port<0.3565> failed: fd=1024 is larger than the largest allowed fd=1023
 
-9. Arguments to the distributed testing harness
+The Erlang VM hardwires the definition of FD_SETSIZE even when using epoll, kqueue, etc. To test a significantly higher number of games you need to both up 'ulimit -n 10240' and recompile Erlang after changing the value of FD_SETSIZE in your system headders if you get the above error. 
 
-The first argument to mb:test() is the host where the gateway
-is running. The second is the port that the gateway is listening on
- and the third argument is the number of games
-to run simultaneously. You can also add "true" as a fourth parameter,
-to get lots of tracing output:
-
-mb:test(localhost, 3000, 10, true).
-
-Multibot launches the given number of games simultaneously
-and an "observer" bot is launched to watch each game. 
-Passing true as the fourth parameter to mb:test()
-tells the observer to print what it sees.
-
-Note that the default installation is limited to 100 simultaneous games.
-
-10. The test harness really tries to overwhelm the test setup by connecting very rapidly so you might see connection refused and similar errors. I'm working these out.
+FD_SETSIZE defaults to 1024 on Mac OSX, for example, and I would change it to 10240.
 
