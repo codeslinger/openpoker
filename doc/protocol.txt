@@ -83,29 +83,20 @@ Stop game updates.
 | 4 | GID | 
 +---+-----+
 
-CALL:
+RAISE:
 
-Call a previous bet. Call 0 to "check".
+Raise a previous bet. Raise 0 to CALL.
 
 0   1     5        9
 +---+-----+--------+
 | 6 | GID | Amount |
 +---+-----+--------+
 
-RAISE:
-
-Raise a previous bet. 
-
-0   1     5        9
-+---+-----+--------+
-| 7 | GID | Amount |
-+---+-----+--------+
-
 FOLD: 
 
 0   1     5
 +---+-----+
-| 8 | GID | 
+| 7 | GID | 
 +---+-----+
 
 JOIN: 
@@ -114,17 +105,17 @@ Join a game by taking a seat. PP_NOTIFY_JOIN with your PID will be sent if succe
 
 0   1     5       6        10
 +---+-----+-------+---------+
-| 9 | GID | Seat# | Buy-in$ |
+| 8 | GID | Seat# | Buy-in$ |
 +---+-----+-------+---------+
 
 LEAVE: 
 
 Leave a game.
 
-0   1      5
-+----+-----+
-| 10 | GID | 
-+----+-----+
+0   1     5
++---+-----+
+| 9 | GID | 
++---+-----+
 
 SITOUT: 
 
@@ -132,7 +123,7 @@ Stay at the table without playing.
 
 0   1      5
 +----+-----+
-| 11 | GID | 
+| 10 | GID | 
 +----+-----+
 
 SITIN:
@@ -141,7 +132,16 @@ Come back into a game. Might require making up the blinds. PP_PLAYER_STATE with 
 
 0   1      5
 +----+-----+
-| 12 | GID | 
+| 11 | GID | 
++----+-----+
+
+WAIT_BB: 
+
+Wait for big blind.
+
+0   1      5
++----+-----+
+| 38 | GID | 
 +----+-----+
 
 CHAT:
@@ -150,7 +150,7 @@ Message: String
 
 0    1     5         N
 +----+-----+---------+
-| 13 | GID | Message |
+| 12 | GID | Message |
 +----+-----+---------+
 
 GAME_QUERY:
@@ -161,7 +161,7 @@ See GAME_SUMMARY for details.
 
 0    1        2        3    4        5    6        7    8         9
 +----+--------+--------+----+--------+----+--------+----+---------+
-| 37 | G.Type | L.Type | OP | #Seats | OP | Joined | OP | Waiting |
+| 13 | G.Type | L.Type | OP | #Seats | OP | Joined | OP | Waiting |
 +----+--------+--------+----+--------+----+--------+----+---------+
 
 SEAT_QUERY:
@@ -170,37 +170,37 @@ Ask for SEAT_STATE packets. One will be sent for each seat in the game.
 
 0    1     5
 +----+-----+
-| 39 | GID |
+| 14 | GID |
 +----+-----+
 
-PLAYER_INFO:
+PLAYER_QUERY:
 
 Ask for a PLAYER packet for this PID.
 
 0    1     5
 +----+-----+
-| 40 | PID |
+| 15 | PID |
 +----+-----+
 
-CREATE_GAME:
-
-Create a new game. See GAME_SUMMARY for field descriptions.
-GOOD will be sent by the server if successful and EXTRA will contain the GID, BAD will be sent otherwise.
-
-0    1        2        3        4      8     12
-+----+--------+--------+--------+------+-------+
-| 41 | G.Type | #Seats | L.Type | Low$ | High$ |
-+----+--------+--------+--------+------+-------+
-
-BALANCE_INFO:
+BALANCE_QUERY:
 
 Retrieve own account and inplay balances. 
 BALANCE is sent in response.
 
 0    1     5
 +----+-----+
-| 42 | PID |
+| 16 | PID |
 +----+-----+
+
+START_GAME:
+
+Create a new game. See GAME_SUMMARY for field descriptions.
+GOOD will be sent by the server if successful and EXTRA will contain the GID, BAD will be sent otherwise.
+
+0    1        2        3        4      8     12
++----+--------+--------+--------+------+-------+
+| 17 | G.Type | #Seats | L.Type | Low$ | High$ |
++----+--------+--------+--------+------+-------+
 
 *** Commands sent from the server to the client ***
 
@@ -228,27 +228,7 @@ ERROR: See bottom of this document for the list of error codes.
 | 250 | CMD | ERROR |
 +-----+-----+-------+
 
-PID:
-
-Player is assigned id PID. Sent in response to LOGIN.
-
-0    1     5
-+----+-----+
-| 35 | PID |
-+----+-----+
-
-HANDOFF:
-
-Sent by the load-balancer /gateway/ in response to a client connection. Client should reconnect to the given host and port.
-
-Host: String
-
-0    1      3      N
-+----+------+------+
-| 36 | Port | Host |
-+----+------+------+
- 
-GAME_SUMMARY: 
+GAME_INFO: 
 
 Game summary information. The server will send one message per game running. 
 
@@ -260,18 +240,8 @@ Waiting: Number of players on the wait list.
 
 0    1     5        6        7        8         9       10     14      18
 +----+-----+--------+--------+--------+---------+--------+------+-------+
-| 14 | GID | G.Type | #Seats | Joined | Waiting | L.Type | Low$ | High$ |
+| 18 | GID | G.Type | #Seats | Joined | Waiting | L.Type | Low$ | High$ |
 +----+-----+--------+--------+--------+---------+--------+------+-------+
-
-SEAT_STATE:
-
-Seat state. 0 - empty, 1 - reserved, 2 - taken. 
-PID will be 0 when the seat is empty.
-
-0    1     5       6       7    11
-+----+-----+-------+-------+-----+
-| 33 | GID | Seat# | State | PID |
-+----+-----+-------+-------+-----+
 
 PLAYER_INFO:
 
@@ -281,7 +251,7 @@ Location: String.
 
 0    1     5          9     N1         N2
 +----+-----+----------+------+----------+
-| 15 | PID | In-Play$ | Nick | Location |
+| 19 | PID | In-Play$ | Nick | Location |
 +----+-----+------+----------+----------+
 
 BET_REQ:
@@ -293,7 +263,7 @@ R.Max: Maximum raise.
 
 0    1     5      9      13      17
 +----+-----+------+-------+-------+
-| 17 | GID | Call | R.Min | R.Max |
+| 20 | GID | Call | R.Min | R.Max |
 +----+-----+------+-------+-------+
 
 NOTIFY_DRAW:
@@ -310,18 +280,8 @@ Suit: C = 1, D = 2, H = 3, S = 4
 
 0    1     5      6      7     9
 +----+-----+------+------+-----+
-| 18 | GID | Rank | Suit | Seq |
+| 21 | GID | Rank | Suit | Seq |
 +----+-----+------+------+-----+
-
-NOTIFY_PRIVATE:
-
-Card was dealt to a player.
-Nick: String.
-
-0    1     5     9    11   
-+----+-----+-----+-----+
-| 19 | GID | PID | Seq |
-+----+-----+-----+-----+
 
 NOTIFY_SHARED:
 
@@ -329,38 +289,8 @@ Shared card was dealt. See NOTIFY_DRAW.
 
 0    1     5      6      7     9
 +----+-----+------+------+-----+
-| 20 | GID | Rank | Suit | Seq |
+| 22 | GID | Rank | Suit | Seq |
 +----+-----+------+------+-----+
-
-NOTIFY_JOIN:
-
-Player joined.
-Nick: String.
-
-0    1     5     9      10    12
-+----+-----+-----+-------+-----+
-| 21 | GID | PID | Seat# | Seq |
-+----+-----+-----+-------+-----+
-
-NOTIFY_LEAVE:
-
-Elvis has left the building.
-Nick: String.
-
-0    1     5     9    11
-+----+-----+-----+-----+
-| 22 | GID | PID | Seq |
-+----+-----+-----+-----+
-
-NOTIFY_CHAT:
-
-Chat message from PID.
-Nick, Message: String
-
-0    1     5     9    11         N
-+----+-----+-----+-----+---------+
-| 23 | GID | PID | Seq | Message |
-+----+-----+-----+-----+---------+
 
 NOTIFY_START:
 
@@ -368,7 +298,7 @@ Game started.
 
 0    1     5     7
 +----+-----+-----+
-| 24 | GID | Seq |
+| 23 | GID | Seq |
 +----+-----+-----+
 
 NOTIFY_END:
@@ -377,7 +307,7 @@ Game ended.
 
 0    1     5     7
 +----+-----+-----+
-| 25 | GID | Seq |
+| 24 | GID | Seq |
 +----+-----+-----+
 
 NOTIFY_CANCEL:
@@ -386,7 +316,7 @@ Game was cancelled.
 
 0    1     5     7
 +----+-----+-----+
-| 38 | GID | Seq |
+| 25 | GID | Seq |
 +----+-----+-----+
 
 NOTIFY_WIN:
@@ -398,73 +328,23 @@ PID wins Amount.
 | 26 | GID | PID | Amount | Seq |
 +----+-----+-----+--------+-----+
 
-NOTIFY_BUTTON:
+NOTIFY_HAND:
 
-Seat# is the button.
+PID has this hand at showdown.
 
-0    1     5       6     7
-+----+-----+-------+-----+
-| 34 | GID | Seat# | Seq |
-+----+-----+-------+-----+
+0    1     5     9     10     11     12
++----+-----+-----+------+------+------+
+| 27 | GID | PID | Rank | Face | Face |
++----+-----+-----+------+------+------+
 
-NOTIFY_SB:
+NOTIFY_MUCK:
 
-Seat# is the small blind.
+PID folded without showing hand.
 
-0    1     5       6     7
-+----+-----+-------+-----+
-| 44 | GID | Seat# | Seq |
-+----+-----+-------+-----+
-
-NOTIFY_BB:
-
-Seat# is the big blind.
-
-0    1     5       6     7
-+----+-----+-------+-----+
-| 45 | GID | Seat# | Seq |
-+----+-----+-------+-----+
-
-NOTIFY_BET:
-
-PID posts a bet.
-
-0    1     5     9       13    15
-+----+-----+-----+--------+-----+
-| 27 | GID | PID | Amount | Seq |
-+----+-----+-----+--------+-----+
-
-NOTIFY_RAISE:
-
-PID raises Amount.
-
-0    1     5     9       13    15
-+----+-----+-----+--------+-----+
-| 29 | GID | PID | Amount | Seq |
-+----+-----+-----+--------+-----+
-
-NOTIFY_CALL:
-
-PID calls Amount.
-
-0    1     5     9       13    15
-+----+-----+-----+--------+-----+
-| 30 | GID | PID | Amount | Seq |
-+----+-----+-----+--------+-----+
-
-NOTIFY_STATE:
-
-Player state change.
-
-State:
-
-1 - playing, 2 - folded, 3 - waiting for big blind, 
-4 - all in, 5 - sitting out.
-
-0    1     5     9      10    12
-+----+-----+-----+-------+-----+
-| 31 | GID | PID | State | Seq |
-+----+-----+-----+-------+-----+
+0    1     5     9
++----+-----+-----+
+| 28 | GID | PID |
++----+-----+-----+
 
 NOTIFY_STAGE:
 
@@ -475,17 +355,122 @@ Stage:
 
 0    1     5       6     8
 +----+-----+-------+-----+
-| 32 | GID | Stage | Seq |
+| 29 | GID | Stage | Seq |
 +----+-----+-------+-----+
 
+SEAT_STATE:
+
+Seat state. 0 - empty, 1 - reserved, 2 - taken. 
+PID will be 0 when the seat is empty.
+
+0    1     5       6       7    11
++----+-----+-------+-------+-----+
+| 30 | GID | Seat# | State | PID |
++----+-----+-------+-------+-----+
+
+YOU_ARE:
+
+Player is assigned id PID. Sent in response to LOGIN.
+
+0    1     5
++----+-----+
+| 31 | PID |
++----+-----+
+
+HANDOFF:
+
+Sent by the load-balancer /gateway/ in response to a client connection. Client should reconnect to the given host and port.
+
+Host: String
+
+0    1      3      N
++----+------+------+
+| 32 | Port | Host |
++----+------+------+
+ 
 BALANCE:
 
 Player balance.
 
 0    1          5          9       
 +----+----------+----------+
-| 43 | Balance$ | In-play$ |
+| 33 | Balance$ | In-play$ |
 +----+----------+----------+
+
+NOTIFY_BUTTON:
+
+Seat# is the button.
+
+0    1     5       6     7
++----+-----+-------+-----+
+| 35 | GID | Seat# | Seq |
++----+-----+-------+-----+
+
+NOTIFY_SB:
+
+Seat# is the small blind.
+
+0    1     5       6     7
++----+-----+-------+-----+
+| 36 | GID | Seat# | Seq |
++----+-----+-------+-----+
+
+NOTIFY_BB:
+
+Seat# is the big blind.
+
+0    1     5       6     7
++----+-----+-------+-----+
+| 37 | GID | Seat# | Seq |
++----+-----+-------+-----+
+
+NOTIFY_RAISE:
+
+PID raises Amount.
+
+0    1     5     9       13    15
++----+-----+-----+--------+-----+
+| 42 | GID | PID | Amount | Seq |
++----+-----+-----+--------+-----+
+
+NOTIFY_CHAT:
+
+Chat message from PID.
+Nick, Message: String
+
+0    1     5     9    11         N
++----+-----+-----+-----+---------+
+| 43 | GID | PID | Seq | Message |
++----+-----+-----+-----+---------+
+
+NOTIFY_JOIN:
+
+Player joined.
+Nick: String.
+
+0    1     5     9      10    12
++----+-----+-----+-------+-----+
+| 44 | GID | PID | Seat# | Seq |
++----+-----+-----+-------+-----+
+
+NOTIFY_LEAVE:
+
+Elvis has left the building.
+Nick: String.
+
+0    1     5     9    11
++----+-----+-----+-----+
+| 45 | GID | PID | Seq |
++----+-----+-----+-----+
+
+NOTIFY_BET:
+
+PID posts a bet.
+
+0    1     5     9       13    15
++----+-----+-----+--------+-----+
+| 27 | GID | PID | Amount | Seq |
++----+-----+-----+--------+-----+
 
 *** Error codes ***
 
