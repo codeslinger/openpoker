@@ -41,6 +41,8 @@
 
 -define(PP_VER, 1).
 
+%%% Skip reading or writing this value
+
 internal() -> 
     {fun(Acc, _) -> Acc end, 
      fun(Bin) -> {undefined, Bin} end}.
