@@ -53,7 +53,11 @@ all() ->
     test(),
     ok.
 
+%%%
 %%% Blinds
+%%%
+
+%%% Intercept game start event to post a blind
 
 bust_trigger(Game, Event, RegName) ->
     case Event of
@@ -65,7 +69,7 @@ bust_trigger(Game, Event, RegName) ->
             Game
     end.
 
-%%% Both blinds are posted
+%%% Intercept bet request (both blinds are posted) and raise
 
 post_blinds_trigger({Game, GID}, Event, RegName) ->
     case Event of 
@@ -78,11 +82,13 @@ post_blinds_trigger({Game, GID}, Event, RegName) ->
             {Game, GID}
     end.
 
+%%% Texas Hold'em context
+
 ctx(Ctx) ->
-    {Ctx#texas.b, 
-     Ctx#texas.sb, 
-     Ctx#texas.bb, 
-     Ctx#texas.call}.
+    {Ctx#texas.b, % button position
+     Ctx#texas.sb, % small blind position
+     Ctx#texas.bb, % big blind position
+     Ctx#texas.call}. % call amount
 
 headsup_test() ->
     {Game, Players} = make_game_heads_up(),
