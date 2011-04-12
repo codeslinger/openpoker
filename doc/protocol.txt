@@ -166,7 +166,7 @@ See GAME_INFO for details.
 
 SEAT_QUERY:
 
-Ask for SEAT_STATE packets. One will be sent for each seat in the game.
+Ask for SEAT_INFO packets. One will be sent for each seat in the game.
 
 0    1     5
 +----+-----+
@@ -175,7 +175,7 @@ Ask for SEAT_STATE packets. One will be sent for each seat in the game.
 
 PLAYER_QUERY:
 
-Ask for a PLAYER packet for this PID.
+Ask for a PLAYER_INFO packet for this PID.
 
 0    1     5
 +----+-----+
@@ -185,7 +185,7 @@ Ask for a PLAYER packet for this PID.
 BALANCE_QUERY:
 
 Retrieve own account and inplay balances. 
-BALANCE is sent in response.
+BALANCE_INFO is sent in response.
 
 0    1     5
 +----+-----+
@@ -358,7 +358,7 @@ Stage:
 | 29 | GID | Stage | Seq |
 +----+-----+-------+-----+
 
-SEAT_STATE:
+SEAT_INFO:
 
 Seat state. 0 - empty, 1 - reserved, 2 - taken. 
 PID will be 0 when the seat is empty.
@@ -388,7 +388,7 @@ Host: String
 | 32 | Port | Host |
 +----+------+------+
  
-BALANCE:
+BALANCE_INFO:
 
 Player balance.
 
