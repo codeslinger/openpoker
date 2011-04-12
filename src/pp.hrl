@@ -253,8 +253,8 @@
 -define(CMD_GOTO, 32).
 
 -record(goto, {
-					host, 
-					port
+					port,
+					host 
 				 }).
 
 -define(CMD_BALANCE, 33).

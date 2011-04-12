@@ -534,8 +534,8 @@ you_are() ->
 
 goto() ->
     record(goto, {
-             host(), 
-             port()
+             port(),
+             host() 
             }).
 
 balance() ->
