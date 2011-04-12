@@ -225,7 +225,7 @@ ERROR: See bottom of this document for the list of error codes.
 
 0     1     2       3
 +-----+-----+-------+
-| 250 | CMD | ERROR |
+| 255 | CMD | ERROR |
 +-----+-----+-------+
 
 GAME_INFO: 
