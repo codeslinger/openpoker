@@ -1,5 +1,7 @@
 %%% Copyright (C) 2005-2008 Wager Labs, SA
 
+%%% Texas Hold'em game context 
+
 -record(texas, {
 					b = none,
 					sb = none,
