@@ -157,7 +157,7 @@ GAME_QUERY:
 
 OP: 0 - ignore, 1 - equals, 2 - less, 3 - greater.
 
-See GAME_SUMMARY for details.
+See GAME_INFO for details.
 
 0    1        2        3    4        5    6        7    8         9
 +----+--------+--------+----+--------+----+--------+----+---------+
@@ -194,7 +194,7 @@ BALANCE is sent in response.
 
 START_GAME:
 
-Create a new game. See GAME_SUMMARY for field descriptions.
+Create a new game. See GAME_INFO for field descriptions.
 GOOD will be sent by the server if successful and EXTRA will contain the GID, BAD will be sent otherwise.
 
 0    1        2        3        4      8     12
