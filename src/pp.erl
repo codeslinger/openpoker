@@ -975,8 +975,8 @@ send(Socket, Data, Ping) ->
                                        {bin, Bin},
                                        {error, Any}
                                       ])
-    end,
-    ping(Socket, size(Bin), Ping).
+    end.
+    %%ping(Socket, size(Bin), Ping).
 
 ping(_, _, false) ->
     ok;
